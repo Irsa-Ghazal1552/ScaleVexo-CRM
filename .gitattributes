@@ -1,0 +1,5 @@
+# Keep LF everywhere: the shell scripts run inside Linux containers and break with CRLF.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary

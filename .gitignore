@@ -1,0 +1,8 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+apps/api/local.sqlite3
+apps/api/staticfiles/
+apps/web/node_modules/
+apps/web/dist/

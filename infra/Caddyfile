@@ -1,0 +1,31 @@
+# SITE_ADDRESS=":80" for a local trial, or your domain (e.g. crm.scalevexo.com) for automatic HTTPS.
+{$SITE_ADDRESS}
+
+encode gzip
+
+header {
+	X-Content-Type-Options nosniff
+	Referrer-Policy strict-origin-when-cross-origin
+	X-Frame-Options DENY
+	Permissions-Policy "camera=(), microphone=(), geolocation=()"
+	-Server
+}
+
+handle /api/* {
+	reverse_proxy api:8000
+}
+
+handle /django-admin/* {
+	reverse_proxy api:8000
+}
+
+handle_path /static/* {
+	root * /srv/static
+	file_server
+}
+
+handle {
+	root * /srv/web
+	try_files {path} /index.html
+	file_server
+}

@@ -1,0 +1,72 @@
+# ScaleVexo CRM - single-server pilot (Technical Spec: API + worker + PostgreSQL + Caddy on one VPS)
+#   docker compose up -d --build
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-scalevexo}
+      POSTGRES_USER: ${POSTGRES_USER:-scalevexo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-scalevexo}"]
+      interval: 5s
+      retries: 20
+
+  api:
+    build: ./apps/api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+      DJANGO_STATIC_ROOT: /static
+    volumes:
+      - ./apps/api:/app            # live code: a restart picks up backend changes
+      - static:/static
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:                   # healthy once migrations ran and gunicorn answers
+      test: ["CMD", "python", "-c", "import os, urllib.request as u; h = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost').split(',')[0].strip(); u.urlopen(u.Request('http://127.0.0.1:8000/api/health', headers={'Host': h}), timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 10s
+
+  worker:
+    build: ./apps/api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+      RUN_MIGRATIONS: "false"
+    volumes:
+      - ./apps/api:/app
+    command: ["python", "manage.py", "run_worker"]
+    depends_on:
+      api:
+        condition: service_healthy   # wait until the api has migrated the database
+
+  web:
+    build: ./apps/web          # builds the React app, then serves it with Caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    volumes:
+      - ./infra/Caddyfile:/etc/caddy/Caddyfile:ro
+      - static:/srv/static:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  static:
+  caddy_data:
+  caddy_config:
