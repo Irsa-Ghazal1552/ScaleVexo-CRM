@@ -34,6 +34,7 @@ def team(workspace, make_member):
         "rep2": make_member("rep2", Role.SALES_REP),
         "dm": make_member("dm", Role.DELIVERY_MANAGER),
         "dev": make_member("dev", Role.DELIVERY_EMPLOYEE),
+        "admin": make_member("admin", Role.ADMIN),
     }
 
 
