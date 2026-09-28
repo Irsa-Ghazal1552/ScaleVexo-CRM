@@ -42,8 +42,8 @@ class TaskSerializer(serializers.ModelSerializer):
             o = obj.opportunity
             return {"type": "opportunity", "id": str(o.pk), "label": o.title, "customer": o.contact.label, "stage": o.stage}
         if obj.lead_id:
-            l = obj.lead
-            return {"type": "lead", "id": str(l.pk), "label": l.contact.label, "customer": l.contact.label, "stage": l.status}
+            lead = obj.lead
+            return {"type": "lead", "id": str(lead.pk), "label": lead.contact.label, "customer": lead.contact.label, "stage": lead.status}
         if obj.ticket_id:
             t = obj.ticket
             return {"type": "ticket", "id": str(t.pk), "label": f"#{t.number} {t.title}", "customer": t.client.name if t.client_id else "Internal"}

@@ -9,8 +9,16 @@ from modules.common.errors import BusinessRuleError, require_version
 from modules.identity.models import DELIVERY_ROLES, Membership, Role
 
 from .models import (
-    Client, Handover, Milestone, MilestoneEvent, MilestoneStatus, Project, ProjectChange, ProjectTemplate,
-    Task, TaskReschedule,
+    Client,
+    Handover,
+    Milestone,
+    MilestoneEvent,
+    MilestoneStatus,
+    Project,
+    ProjectChange,
+    ProjectTemplate,
+    Task,
+    TaskReschedule,
 )
 
 

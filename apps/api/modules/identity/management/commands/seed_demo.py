@@ -13,7 +13,7 @@ from modules.identity.models import Membership, Role, Workspace
 
 User = get_user_model()
 DEMO_DOMAIN = "demo.scalevexo.local"
-DEMO_PASSWORD = "DemoPass!2026"
+DEMO_PASSWORD = "DemoPass!2026"  # noqa: S105 - published demo login, removed with --remove
 
 PEOPLE = [
     ("sara", "Sara", "Khan", Role.SALES_MANAGER, "Sales Manager"),

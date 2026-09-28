@@ -42,7 +42,7 @@ class AISettingsView(APIView):
         data = {
             "enabled": s.enabled, "provider": s.provider, "model": s.model, "monthly_budget_usd": str(s.monthly_budget_usd),
             "input_cost_per_mtok": str(s.input_cost_per_mtok), "output_cost_per_mtok": str(s.output_cost_per_mtok),
-            "max_output_tokens": s.max_output_tokens, "providers": [{"value": v, "label": l} for v, l in AISettings.Provider.choices],
+            "max_output_tokens": s.max_output_tokens, "providers": [{"value": v, "label": text} for v, text in AISettings.Provider.choices],
             "usage": services.usage(m.workspace),
         }
         return Response(data)

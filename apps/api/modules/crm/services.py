@@ -17,8 +17,17 @@ from modules.common.errors import BusinessRuleError, require_version
 from modules.identity.models import Membership, Role
 
 from .models import (
-    Activity, ActivityKind, ActivityRevision, Contact, ImportBatch, Lead, LeadStatus,
-    Opportunity, Stage, StageHistory, Verification,
+    Activity,
+    ActivityKind,
+    ActivityRevision,
+    Contact,
+    ImportBatch,
+    Lead,
+    LeadStatus,
+    Opportunity,
+    Stage,
+    StageHistory,
+    Verification,
 )
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
@@ -510,7 +519,6 @@ def pipeline_summary(opps):
 
 # ---------------------------------------------------------------- activities
 def log_activity(actor, data):
-    from modules.work.models import Client
 
     ws = actor.workspace
     kind = data.get("kind")
@@ -707,7 +715,7 @@ def import_preview(actor, file_name, content):
 
 def preview_rows(batch, limit=20):
     headers, rows = _read_rows(batch.raw_csv)
-    return [dict(zip(headers, r)) for r in rows[:limit]]
+    return [dict(zip(headers, r, strict=False)) for r in rows[:limit]]
 
 
 def _owner_lookup(workspace):
@@ -745,7 +753,7 @@ def import_confirm(actor, batch, mapping, default_owner_id=None):
         counts = {"total_rows": len(rows), "created": 0, "duplicates": 0, "invalid": 0, "skipped_blank": 0}
         error_rows = []
         for index, raw in enumerate(rows, start=2):  # spreadsheet row numbers (header is row 1)
-            values = dict(zip(headers, raw + [""] * (len(headers) - len(raw))))
+            values = dict(zip(headers, raw + [""] * (len(headers) - len(raw)), strict=False))
             if not any((v or "").strip() for v in values.values()):
                 counts["skipped_blank"] += 1
                 continue
@@ -836,9 +844,9 @@ def export_leads_csv(actor):
     qs = access.leads_for(actor).select_related("contact", "owner__user")
     header = ["lead_id", "name", "company", "email", "phone", "source", "status", "owner", "next_action", "next_action_due", "created_at"]
     rows = [
-        [l.pk, l.contact.name, l.contact.company_name, l.contact.email, l.contact.phone, l.source, l.status,
-         l.owner.display_name if l.owner else "", l.next_action, l.next_action_due.isoformat() if l.next_action_due else "",
-         l.created_at.isoformat()]
-        for l in qs
+        [lead.pk, lead.contact.name, lead.contact.company_name, lead.contact.email, lead.contact.phone, lead.source, lead.status,
+         lead.owner.display_name if lead.owner else "", lead.next_action, lead.next_action_due.isoformat() if lead.next_action_due else "",
+         lead.created_at.isoformat()]
+        for lead in qs
     ]
     return write_csv(header, rows)

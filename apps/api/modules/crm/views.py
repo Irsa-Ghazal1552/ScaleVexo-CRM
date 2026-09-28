@@ -13,7 +13,11 @@ from modules.identity.models import Membership
 from . import services
 from .models import OPEN_STAGES, Contact, ImportBatch, Opportunity, StageHistory
 from .serializers import (
-    ActivitySerializer, ContactSerializer, ImportBatchSerializer, LeadSerializer, OpportunitySerializer,
+    ActivitySerializer,
+    ContactSerializer,
+    ImportBatchSerializer,
+    LeadSerializer,
+    OpportunitySerializer,
     StageHistorySerializer,
 )
 

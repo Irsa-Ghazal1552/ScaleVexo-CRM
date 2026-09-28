@@ -1,0 +1,20 @@
+# Ruff lints the backend in CI (see .github/workflows/ci.yml).
+line-length = 140
+target-version = "py312"
+extend-exclude = ["modules/*/migrations"]
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP", "DJ", "S"]
+ignore = [
+  "S101",   # assert is how pytest checks
+  "B904",   # re-raising a business error from a parse error needs no chained cause
+  "DJ001",  # blank CharFields store "" by design; null would add a second empty value
+  "DJ008",  # internal models (settings, budget rows, heartbeats) need no __str__
+  "E501",   # the codebase is written at ~150-170 columns; wrapping is not enforced
+]
+
+[lint.per-file-ignores]
+"tests/*" = ["S105", "S106"]  # fixture passwords
+
+[lint.isort]
+known-first-party = ["config", "modules"]

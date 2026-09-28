@@ -1,8 +1,8 @@
 from django.contrib.auth import authenticate, get_user_model, login, logout, update_session_auth_hash
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.shortcuts import get_object_or_404
 from django.middleware.csrf import get_token
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -44,7 +44,7 @@ def me_payload(membership):
             "export": membership.role == Role.OWNER,
             "reports": membership.role in MANAGERS,
         },
-        "roles": [{"value": v, "label": l} for v, l in Role.choices],
+        "roles": [{"value": v, "label": text} for v, text in Role.choices],
     }
 
 

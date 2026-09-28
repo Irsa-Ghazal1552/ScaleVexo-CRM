@@ -16,8 +16,13 @@ from modules.identity.models import Membership, Role
 from . import services
 from .models import Client, Handover, Milestone, Project, ProjectChange, ProjectTemplate
 from .serializers import (
-    ClientSerializer, HandoverSerializer, MilestoneSerializer, ProjectChangeSerializer, ProjectSerializer,
-    ProjectTemplateSerializer, TaskSerializer,
+    ClientSerializer,
+    HandoverSerializer,
+    MilestoneSerializer,
+    ProjectChangeSerializer,
+    ProjectSerializer,
+    ProjectTemplateSerializer,
+    TaskSerializer,
 )
 
 
@@ -33,7 +38,6 @@ class TodayView(APIView):
     def get(self, request):
         from modules.automation.models import Alert
         from modules.automation.serializers import AlertSerializer
-        from modules.work.models import Task
 
         m = get_membership(request)
         now = timezone.now()

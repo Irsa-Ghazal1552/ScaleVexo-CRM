@@ -94,7 +94,8 @@ function WorkspaceTab() {
                   checked={days.has(String(i))}
                   onChange={(e) => {
                     const next = new Set(days)
-                    e.target.checked ? next.add(String(i)) : next.delete(String(i))
+                    if (e.target.checked) next.add(String(i))
+                    else next.delete(String(i))
                     setForm({ ...form, work_days: Array.from(next).sort().join(',') })
                   }}
                 />

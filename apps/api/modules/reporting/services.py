@@ -109,7 +109,6 @@ def overview(m, params):
 
 
 def report(m, name, params):
-    from modules.support.models import Ticket
     from modules.work.models import Handover, Milestone
 
     start, end, filters = period(m.workspace, params)
@@ -117,9 +116,9 @@ def report(m, name, params):
     if name == "neglected-leads":
         days = int(params.get("days") or 7)
         filters["no_activity_days"] = days
-        rows = [{"id": str(l.pk), "type": "lead", "name": l.contact.label, "status": l.status,
-                 "owner": l.owner.display_name if l.owner else None, "last_activity_at": l.last_activity_at,
-                 "created_at": l.created_at} for l in neglected_leads_qs(m, days).select_related("contact", "owner__user")]
+        rows = [{"id": str(lead.pk), "type": "lead", "name": lead.contact.label, "status": lead.status,
+                 "owner": lead.owner.display_name if lead.owner else None, "last_activity_at": lead.last_activity_at,
+                 "created_at": lead.created_at} for lead in neglected_leads_qs(m, days).select_related("contact", "owner__user")]
     elif name == "overdue-next-actions":
         rows = [{"id": str(o.pk), "type": "opportunity", "name": o.title, "customer": o.contact.label, "stage": o.stage,
                  "owner": o.owner.display_name if o.owner else None, "next_action": o.next_action, "next_action_due": o.next_action_due}

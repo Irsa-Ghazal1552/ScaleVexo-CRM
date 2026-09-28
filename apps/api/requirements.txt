@@ -8,3 +8,4 @@ gunicorn>=23
 # tests
 pytest>=8
 pytest-django>=4.9
+ruff>=0.13,<0.14
