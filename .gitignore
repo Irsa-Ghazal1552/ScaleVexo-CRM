@@ -6,3 +6,6 @@ apps/api/local.sqlite3
 apps/api/staticfiles/
 apps/web/node_modules/
 apps/web/dist/
+node_modules/
+e2e/test-results/
+e2e/playwright-report/

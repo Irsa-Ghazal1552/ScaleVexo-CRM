@@ -18,7 +18,7 @@ function AuthShell({ children }: { children: ReactNode }) {
           <h2>One record of what was promised, who owns the next step, and whether it happened.</h2>
           <p>Leads, deals, onboarding, projects and support in one continuous journey - for the whole ScaleVexo team.</p>
         </div>
-        <span style={{ color: '#6b6b6b', fontSize: 12 }}>Internal pilot · Release 1</span>
+        <span style={{ color: '#8f8f8f', fontSize: 12 }}>Internal pilot · Release 1</span>
       </div>
       <div className="auth-form">{children}</div>
     </div>

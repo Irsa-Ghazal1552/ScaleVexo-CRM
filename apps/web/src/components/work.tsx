@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react'
+import { ReactNode, useId, useState } from 'react'
 import { Link } from 'react-router'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -257,6 +257,7 @@ export function Timeline({ target, allowLog = true, extraTop }: { target: { lead
   const qc = useQueryClient()
   const me = useMe()
   const toast = useToast()
+  const fid = useId()
   const filterKey = target.opportunity_id ? { opportunity: target.opportunity_id } : target.lead_id ? { lead: target.lead_id } : { client: target.client_id! }
   const q = useQuery({ queryKey: ['activities', filterKey], queryFn: () => get<Paged<Activity>>('/activities?' + new URLSearchParams(filterKey as any)) })
   const [kind, setKind] = useState('call')
@@ -306,33 +307,33 @@ export function Timeline({ target, allowLog = true, extraTop }: { target: { lead
             {kind !== 'note' && (
               <div className="row">
                 <div className="field">
-                  <label>Outcome *</label>
-                  <input className="input" placeholder={kind === 'call' ? 'e.g. Spoke - interested, wants proposal' : 'What happened?'} value={form.outcome || ''} onChange={(e) => setForm({ ...form, outcome: e.target.value })} />
+                  <label htmlFor={`${fid}-outcome`}>Outcome *</label>
+                  <input id={`${fid}-outcome`} className="input" placeholder={kind === 'call' ? 'e.g. Spoke - interested, wants proposal' : 'What happened?'} value={form.outcome || ''} onChange={(e) => setForm({ ...form, outcome: e.target.value })} />
                 </div>
                 <div className="field" style={{ maxWidth: 220 }}>
-                  <label>When</label>
-                  <input className="input" type="datetime-local" value={form.occurred_at || ''} onChange={(e) => setForm({ ...form, occurred_at: e.target.value })} />
+                  <label htmlFor={`${fid}-when`}>When</label>
+                  <input id={`${fid}-when`} className="input" type="datetime-local" value={form.occurred_at || ''} onChange={(e) => setForm({ ...form, occurred_at: e.target.value })} />
                 </div>
               </div>
             )}
             <div className="field">
-              <label>{kind === 'note' ? 'Note *' : 'Notes'}</label>
-              <textarea className="textarea" style={{ minHeight: 64 }} value={form.body || ''} onChange={(e) => setForm({ ...form, body: e.target.value })} />
+              <label htmlFor={`${fid}-body`}>{kind === 'note' ? 'Note *' : 'Notes'}</label>
+              <textarea id={`${fid}-body`} className="textarea" style={{ minHeight: 64 }} value={form.body || ''} onChange={(e) => setForm({ ...form, body: e.target.value })} />
             </div>
             {kind === 'linkedin' && (
               <div className="field">
-                <label>Profile / message link</label>
-                <input className="input" value={form.source_url || ''} onChange={(e) => setForm({ ...form, source_url: e.target.value })} />
+                <label htmlFor={`${fid}-link`}>Profile / message link</label>
+                <input id={`${fid}-link`} className="input" value={form.source_url || ''} onChange={(e) => setForm({ ...form, source_url: e.target.value })} />
               </div>
             )}
             <div className="row">
               <div className="field">
-                <label>Next action</label>
-                <input className="input" placeholder="Creates a follow-up for you" value={form.next_action || ''} onChange={(e) => setForm({ ...form, next_action: e.target.value })} />
+                <label htmlFor={`${fid}-next`}>Next action</label>
+                <input id={`${fid}-next`} className="input" placeholder="Creates a follow-up for you" value={form.next_action || ''} onChange={(e) => setForm({ ...form, next_action: e.target.value })} />
               </div>
               <div className="field" style={{ maxWidth: 220 }}>
-                <label>Due</label>
-                <input className="input" type="datetime-local" value={form.next_action_due || ''} onChange={(e) => setForm({ ...form, next_action_due: e.target.value })} />
+                <label htmlFor={`${fid}-due`}>Due</label>
+                <input id={`${fid}-due`} className="input" type="datetime-local" value={form.next_action_due || ''} onChange={(e) => setForm({ ...form, next_action_due: e.target.value })} />
               </div>
             </div>
             <div className="flex">
@@ -598,15 +599,15 @@ export function StageBar({ stages, current, onPick, doneUntil }: { stages: { val
   const idx = stages.findIndex((s) => s.value === current)
   const limit = doneUntil ?? idx
   return (
-    <div className="stagebar" role="list">
+    <div className="stagebar" role="group" aria-label="Stages">
       {stages.map((s, i) => (
         <button
           key={s.value}
-          role="listitem"
           className={s.value === current ? 'current' : i < limit ? 'done' : ''}
           onClick={() => onPick && s.value !== current && onPick(s.value)}
           title={onPick ? `Move to ${s.label}` : s.label}
-          aria-current={s.value === current}
+          aria-current={s.value === current ? 'step' : undefined}
+          disabled={!onPick}
         >
           {s.label}
         </button>

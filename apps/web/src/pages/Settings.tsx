@@ -62,31 +62,31 @@ function WorkspaceTab() {
     <Card title="Workspace and working calendar">
       <div className="row">
         <div className="field">
-          <label>Workspace name</label>
-          <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <label htmlFor="ws-name">Workspace name</label>
+          <input id="ws-name" className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
         </div>
         <div className="field">
-          <label>Time zone</label>
-          <input className="input" value={form.timezone} onChange={(e) => setForm({ ...form, timezone: e.target.value })} />
+          <label htmlFor="ws-tz">Time zone</label>
+          <input id="ws-tz" className="input" value={form.timezone} onChange={(e) => setForm({ ...form, timezone: e.target.value })} />
           <span className="hint">e.g. Asia/Karachi, America/New_York</span>
         </div>
         <div className="field">
-          <label>Default currency</label>
-          <input className="input" value={form.default_currency} onChange={(e) => setForm({ ...form, default_currency: e.target.value.toUpperCase() })} maxLength={3} />
+          <label htmlFor="ws-currency">Default currency</label>
+          <input id="ws-currency" className="input" value={form.default_currency} onChange={(e) => setForm({ ...form, default_currency: e.target.value.toUpperCase() })} maxLength={3} />
         </div>
       </div>
       <div className="row">
         <div className="field">
-          <label>Working hours start</label>
-          <input className="input" type="time" value={form.work_start.slice(0, 5)} onChange={(e) => setForm({ ...form, work_start: e.target.value })} />
+          <label htmlFor="ws-start">Working hours start</label>
+          <input id="ws-start" className="input" type="time" value={form.work_start.slice(0, 5)} onChange={(e) => setForm({ ...form, work_start: e.target.value })} />
         </div>
         <div className="field">
-          <label>Working hours end</label>
-          <input className="input" type="time" value={form.work_end.slice(0, 5)} onChange={(e) => setForm({ ...form, work_end: e.target.value })} />
+          <label htmlFor="ws-end">Working hours end</label>
+          <input id="ws-end" className="input" type="time" value={form.work_end.slice(0, 5)} onChange={(e) => setForm({ ...form, work_end: e.target.value })} />
         </div>
         <div className="field">
-          <label>Working days</label>
-          <div className="flex wrap">
+          <span className="label" id="ws-days">Working days</span>
+          <div className="flex wrap" role="group" aria-labelledby="ws-days">
             {DAYS.map((d, i) => (
               <label key={d} className="check">
                 <input
@@ -415,10 +415,10 @@ function ImportTab() {
             <>
               <h4 style={{ marginBottom: 8 }}>Match your columns</h4>
               <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))' }}>
-                {batch.headers.map((h: string) => (
+                {batch.headers.map((h: string, i: number) => (
                   <div className="field" key={h}>
-                    <label>{h}</label>
-                    <select className="select" value={mapping[h] || ''} onChange={(e) => setMapping({ ...mapping, [h]: e.target.value })}>
+                    <label htmlFor={`map-${i}`}>{h}</label>
+                    <select id={`map-${i}`} className="select" value={mapping[h] || ''} onChange={(e) => setMapping({ ...mapping, [h]: e.target.value })}>
                       <option value="">Ignore this column</option>
                       {targets.map((t) => (
                         <option key={t} value={t}>
@@ -430,8 +430,8 @@ function ImportTab() {
                 ))}
               </div>
               <div className="field" style={{ maxWidth: 360 }}>
-                <label>Owner for rows without an owner column</label>
-                <select className="select" value={owner} onChange={(e) => setOwner(e.target.value)}>
+                <label htmlFor="import-owner">Owner for rows without an owner column</label>
+                <select id="import-owner" className="select" value={owner} onChange={(e) => setOwner(e.target.value)}>
                   <option value="">Leave unassigned</option>
                   {(members.data || [])
                     .filter((m) => ['owner', 'sales_manager', 'sales_rep'].includes(m.role))

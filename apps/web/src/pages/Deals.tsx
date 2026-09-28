@@ -91,12 +91,12 @@ function DealCard({ d, onMove, commercials }: { d: any; onMove: (to: string) => 
       draggable
       onDragStart={(e) => e.dataTransfer.setData('text/plain', d.id)}
       onClick={() => nav(`/deals/${d.id}`)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && nav(`/deals/${d.id}`)}
     >
       <div className="flex between">
-        <div className="t">{d.title}</div>
+        {/* The title is the keyboard/screen-reader way in; the whole card stays clickable for the mouse. */}
+        <Link className="t" to={`/deals/${d.id}`} onClick={(e) => e.stopPropagation()}>
+          {d.title}
+        </Link>
         <div style={{ position: 'relative' }} onClick={(e) => e.stopPropagation()}>
           <button className="icon-btn" aria-label="Move deal" onClick={() => setMenu(!menu)}>
             <MoreHorizontal size={16} />
