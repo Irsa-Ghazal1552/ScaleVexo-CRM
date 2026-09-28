@@ -219,8 +219,8 @@ export function MfaPanel({ onDone }: { onDone?: () => void }) {
             </span>
           </div>
           <div className="field">
-            <label>3. Enter the 6-digit code shown in the app</label>
-            <input className="input" inputMode="numeric" value={code} onChange={(e) => setCode(e.target.value)} />
+            <label htmlFor="mfa-code">3. Enter the 6-digit code shown in the app</label>
+            <input id="mfa-code" className="input" inputMode="numeric" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value)} />
           </div>
           <button className="btn primary" onClick={enable}>
             Turn on MFA
