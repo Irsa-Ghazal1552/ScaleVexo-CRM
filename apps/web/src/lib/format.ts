@@ -62,24 +62,26 @@ export function fmtDateTime(v?: string | null) {
 
 export function relative(v?: string | null) {
   if (!v) return '—'
-  const diff = (new Date(v).getTime() - Date.now()) / 1000
+  const when = new Date(v)
+  const diff = (when.getTime() - Date.now()) / 1000
   const abs = Math.abs(diff)
-  const units: [number, string][] = [
-    [60, 'second'],
-    [3600, 'minute'],
-    [86400, 'hour'],
-    [604800, 'day'],
-    [2629800, 'week'],
-    [31557600, 'month'],
-  ]
   const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' })
   if (abs < 60) return 'just now'
   if (abs < 3600) return rtf.format(Math.round(diff / 60), 'minute')
   if (abs < 86400) return rtf.format(Math.round(diff / 3600), 'hour')
-  if (abs < 604800) return rtf.format(Math.round(diff / 86400), 'day')
+  // Count calendar days so "yesterday" really means the previous date, not "about 24 hours ago".
+  const midnight = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+  const days = Math.round((midnight(when) - midnight(new Date())) / 86400000)
+  if (Math.abs(days) < 7) return rtf.format(days, 'day')
   if (abs < 2629800) return rtf.format(Math.round(diff / 604800), 'week')
-  void units
   return rtf.format(Math.round(diff / 2629800), 'month')
+}
+
+/** Operating-cost amounts (the API keeps 4-6 decimals for AI spend). */
+export function usd(value?: string | number | null) {
+  const n = Number(value || 0)
+  if (n > 0 && n < 0.01) return '< $0.01'
+  return '$' + n.toFixed(2)
 }
 
 export function money(value?: string | number | null, currency?: string) {

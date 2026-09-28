@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { get, post, qs } from '../lib/api'
 import { useMe } from '../lib/auth'
-import { CURRENCIES, entityPath, fmtDate, fmtDateTime, money } from '../lib/format'
+import { CURRENCIES, entityPath, fmtDate, fmtDateTime, money, usd } from '../lib/format'
 import { Card, Empty, FormModal, PageHead, Spinner, Tabs, useToast } from '../components/ui'
 
 const REPORTS = [
@@ -131,7 +131,7 @@ export default function ReportsPage() {
               <>
                 <h3 style={{ marginTop: 8 }}>Operating cost</h3>
                 <div className="grid tiles">
-                  {tile('AI spend this month', `$${s.operating_cost.ai.spent_usd}`, `of $${s.operating_cost.ai.budget_usd} budget · ${s.operating_cost.ai.requests} requests`)}
+                  {tile('AI spend this month', usd(s.operating_cost.ai.spent_usd), `of ${usd(s.operating_cost.ai.budget_usd)} budget · ${s.operating_cost.ai.requests} requests`)}
                 </div>
               </>
             )}

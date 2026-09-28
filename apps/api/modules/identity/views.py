@@ -122,8 +122,11 @@ class LogoutView(APIView):
 
 class MeView(APIView):
     allow_without_mfa = True
+    permission_classes = []  # anonymous callers get 204 instead of a 401 console error
 
     def get(self, request):
+        if getattr(request._request, "membership", None) is None:
+            return Response(status=204)
         return Response(me_payload(get_membership(request)))
 
 

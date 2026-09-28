@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Download, Play, Upload } from 'lucide-react'
 import { api, download, get, patch, post, put } from '../lib/api'
 import { useAuth, useMe } from '../lib/auth'
-import { fmtDateTime, ROLE_LABELS } from '../lib/format'
+import { fmtDateTime, ROLE_LABELS, usd } from '../lib/format'
 import { Badge, Card, Empty, errorText, FieldInput, FormModal, PageHead, Pager, Spinner, Tabs, useMembers, useToast } from '../components/ui'
 import { MfaPanel } from './Auth'
 
@@ -243,12 +243,12 @@ function AITab() {
       <div className="grid tiles">
         <div className="tile dark">
           <div className="k">Spent this month</div>
-          <div className="v">${u.spent_usd}</div>
-          <div className="s">of ${u.budget_usd} limit</div>
+          <div className="v">{usd(u.spent_usd)}</div>
+          <div className="s">of {usd(u.budget_usd)} limit</div>
         </div>
         <div className="tile">
           <div className="k">Remaining</div>
-          <div className="v">${u.remaining_usd}</div>
+          <div className="v">{usd(u.remaining_usd)}</div>
         </div>
         <div className="tile">
           <div className="k">Requests</div>

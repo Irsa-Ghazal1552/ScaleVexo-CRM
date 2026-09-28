@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router'
 import Layout from './components/Layout'
 import { Spinner } from './components/ui'
@@ -38,23 +39,28 @@ export default function App() {
     )
   }
 
+  // Same rules as the sidebar, so a typed URL cannot load a page whose API calls the role may not make.
+  const caps = me.capabilities
+  const only = (allowed: boolean, page: ReactNode) =>
+    allowed ? page : <div className="empty">Your role does not have access to this page.</div>
+
   return (
     <Layout>
       <Routes>
         <Route path="/" element={<TodayPage />} />
-        <Route path="/leads" element={<LeadsPage />} />
-        <Route path="/leads/:id" element={<LeadDetailPage />} />
-        <Route path="/deals" element={<DealsPage />} />
+        <Route path="/leads" element={only(caps.sales, <LeadsPage />)} />
+        <Route path="/leads/:id" element={only(caps.sales, <LeadDetailPage />)} />
+        <Route path="/deals" element={only(caps.sales, <DealsPage />)} />
         <Route path="/deals/:id" element={<DealDetailPage />} />
         <Route path="/clients" element={<ClientsPage />} />
         <Route path="/clients/:id" element={<ClientDetailPage />} />
-        <Route path="/handovers" element={<HandoversPage />} />
+        <Route path="/handovers" element={only(caps.delivery || caps.sales_manage, <HandoversPage />)} />
         <Route path="/projects" element={<ProjectsPage />} />
         <Route path="/projects/:id" element={<ProjectDetailPage />} />
         <Route path="/tickets" element={<TicketsPage />} />
         <Route path="/tickets/:id" element={<TicketDetailPage />} />
         <Route path="/team" element={<TeamPage />} />
-        <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/reports" element={only(caps.reports, <ReportsPage />)} />
         <Route path="/alerts" element={<AlertsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/login" element={<Navigate to="/" replace />} />
