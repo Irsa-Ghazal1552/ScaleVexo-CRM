@@ -1,5 +1,10 @@
+import hmac
+
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from rest_framework import permissions
+from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -147,3 +152,27 @@ class RuleExecutionsView(APIView):
         m = get_membership(request)
         require_role(m, *CONFIG)
         return Response(RuleExecutionSerializer(RuleExecution.objects.filter(workspace=m.workspace)[:200], many=True).data)
+
+
+class CronRulesView(APIView):
+    """One rule-worker cycle, for hosts without a long-running worker (Vercel + an external scheduler).
+
+    Call with the header ``Authorization: Bearer <CRON_SECRET>``. Disabled when CRON_SECRET is empty.
+    Running it more often is harmless: rule executions are idempotent.
+    """
+
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        if not settings.CRON_SECRET:
+            raise NotFound()
+        given = request.headers.get("Authorization", "")
+        if not hmac.compare_digest(given.encode(), f"Bearer {settings.CRON_SECRET}".encode()):
+            raise PermissionDenied("Invalid cron secret.")
+        from .engine import run_all
+
+        summary = run_all()
+        return Response({"workspaces": len(summary), "ok": True})
+
+    post = get

@@ -85,6 +85,7 @@ api = [
     path("rules/run", automation.RunRulesView.as_view()),
     path("rules/executions", automation.RuleExecutionsView.as_view()),
     path("rules/<uuid:pk>", automation.RuleDetailView.as_view()),
+    path("cron/rules", automation.CronRulesView.as_view()),
     # reporting (CRM10, CRM11, CRM13)
     path("reports/overview", reporting.OverviewView.as_view()),
     path("reports/accountability", reporting.AccountabilityView.as_view()),

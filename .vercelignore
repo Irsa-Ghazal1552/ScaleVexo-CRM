@@ -1,0 +1,11 @@
+# Keep uploads from `vercel deploy` small; only apps/web, apps/api source and api/ are needed.
+.env
+**/node_modules
+**/.venv
+**/__pycache__
+apps/api/local.sqlite3
+apps/api/staticfiles
+apps/web/dist
+e2e
+infra
+docs

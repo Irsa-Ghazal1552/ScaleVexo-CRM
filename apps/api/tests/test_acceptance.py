@@ -503,3 +503,36 @@ def test_leads_csv_export_is_limited_to_sales_managers(team, client_for):
     assert client_for(team["rep1"]).get("/api/export/leads.csv").status_code == 403
     res = client_for(team["manager"]).get("/api/export/leads.csv")
     assert res.status_code == 200 and res["Content-Type"].startswith("text/csv")
+
+
+# ---------------------------------------------------------------- hosting without a worker (Vercel)
+def test_cron_rules_endpoint_needs_the_secret(team, workspace, settings):
+    from rest_framework.test import APIClient
+
+    c = APIClient()
+    settings.CRON_SECRET = ""
+    assert c.get("/api/cron/rules").status_code == 404  # disabled unless configured
+    settings.CRON_SECRET = "s3cret-value"
+    assert c.get("/api/cron/rules").status_code == 403
+    assert c.get("/api/cron/rules", HTTP_AUTHORIZATION="Bearer wrong").status_code == 403
+    lead = _lead(team["manager"], email="cron@example.com")
+    Lead.objects.filter(pk=lead.pk).update(created_at=timezone.now() - timedelta(days=10))
+    ok = c.get("/api/cron/rules", HTTP_AUTHORIZATION="Bearer s3cret-value")
+    assert ok.status_code == 200 and ok.json()["ok"] is True
+    assert Alert.objects.filter(rule_code="A01", entity_id=str(lead.pk)).exists()
+
+
+def test_database_url_settings_parse(monkeypatch):
+    import importlib
+
+    import config.settings as s
+
+    monkeypatch.delenv("DB_ENGINE", raising=False)
+    monkeypatch.setenv("DATABASE_URL", "postgres://neon%40user:p%40ss@ep-x.neon.tech/crm?sslmode=require")
+    try:
+        db = importlib.reload(s).DATABASES["default"]
+        assert (db["NAME"], db["USER"], db["PASSWORD"], db["HOST"], db["PORT"]) == ("crm", "neon@user", "p@ss", "ep-x.neon.tech", 5432)
+        assert db["OPTIONS"] == {"sslmode": "require"} and db["CONN_MAX_AGE"] == 0
+    finally:
+        monkeypatch.delenv("DATABASE_URL")
+        importlib.reload(s)
